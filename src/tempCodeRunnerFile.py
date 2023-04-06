@@ -1,0 +1,1 @@
+        # self.sidebar_frame.grid_rowconfigure(10, weight=20)
