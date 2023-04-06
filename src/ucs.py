@@ -1,61 +1,44 @@
 import heapq
 
 def ucs(start, goal, graph):
-    # Initialize the frontier queue with the start node and its priority
-    frontier = [(0, start)]
-    # Initialize the explored set to an empty set
+    frontier = [(0, start)]  # (cost, node)
     explored = set()
-    # Initialize the cost of the start node to 0
-    node_cost = {start: 0}
-    # Initialize the parent of the start node to None
     parent = {start: None}
+    cost = {start: 0}
 
-    # Keep searching until the frontier queue is empty
     while frontier:
-        # Get the node with the lowest cost from the frontier queue
-        cost, current = heapq.heappop(frontier)
+        current_cost, current_node = heapq.heappop(frontier)
 
-        # Check if the current node is the goal node
-        if current == goal:
+        if current_node == goal:
             path = []
-            # Reconstruct the path from the start node to the goal node using the parent dictionary
-            while current:
-                path.append(current)
-                current = parent[current]
-            return list(reversed(path)), node_cost[goal]
+            while current_node is not None:
+                path.append(current_node)
+                current_node = parent[current_node]
+            path.reverse()
+            return path, cost[goal]
 
-        # Add the current node to the explored set
-        explored.add(current)
+        explored.add(current_node)
 
-        # Explore the neighbors of the current node
-        for neighbor, neighbor_cost in graph[current].items():
-            # Calculate the total cost of reaching the neighbor from the start node
-            total_cost = node_cost[current] + neighbor_cost
+        for neighbor, neighbor_cost in graph[current_node].items():
+            if neighbor not in explored:
+                new_cost = cost[current_node] + neighbor_cost
+                if neighbor not in cost or new_cost < cost[neighbor]:
+                    cost[neighbor] = new_cost
+                    parent[neighbor] = current_node
+                    heapq.heappush(frontier, (new_cost, neighbor))
 
-            # Check if the neighbor is already explored or in the frontier queue with a lower cost
-            if neighbor in explored:
-                continue
-            if (total_cost, neighbor) in frontier:
-                continue
-
-            # If the neighbor is not already explored or in the frontier queue with a lower cost,
-            # update its cost and parent in the node_cost and parent dictionaries, and add it to the frontier queue
-            node_cost[neighbor] = total_cost
-            parent[neighbor] = current
-            heapq.heappush(frontier, (total_cost, neighbor))
-
-    # If the goal node is not found and the frontier queue is empty, return None
-    return None
+    return None, float('inf')
 
 graph = {
     'A': {'B': 2, 'C': 5},
     'B': {'D': 1, 'E': 4},
     'C': {'F': 3},
-    'D': {'G': 2},
+    'D': {'G': 2, 'J': 1},
     'E': {'H': 3},
     'F': {'H': 2},
     'G': {'H': 4},
-    'H': {}
+    'H': {'J': 1},
+    'J': {}
 }
 
 path, cost = ucs('A', 'H', graph)

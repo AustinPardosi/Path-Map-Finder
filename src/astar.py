@@ -49,7 +49,8 @@ graph = {
     'B': [('D', 5)],
     'C': [('D', 1), ('F', 9)],
     'D': [('F', 5)],
-    'E': [('F', 2)]
+    'E': [('F', 2)],
+    'F': []
 }
 
 heuristic = lambda a, b: 0 # Use zero heuristic for simplicity
