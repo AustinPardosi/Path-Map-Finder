@@ -1,9 +1,19 @@
 from tkinter import filedialog, Canvas
 from PIL import ImageTk, Image
-from tkintermapview import TkinterMapView
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+# from tkintermapview import TkinterMapView
+import matplotlib.pyplot as plt
 import customtkinter
 import tkinter
+import tkinter as tk
 import os
+import networkx as nx
+import parse_into_graph as p
+import algorithm as a
+from algorithm import UCS, aStar
+
+UCS_Class = UCS()
+aStar_Class = aStar()
 
 customtkinter.set_default_color_theme("blue") 
 
@@ -51,9 +61,9 @@ class PathFinder(customtkinter.CTk):
         # Create combobox 
         self.Node_label = customtkinter.CTkLabel(self.sidebar_frame, text="Nodes Search: ", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.Node_label.grid(row=4, column=0, padx=25, pady=(30,0), sticky="w")
-        self.combobox_1 = customtkinter.CTkComboBox(values=["A", "B", "C"], master= self.sidebar_frame)
+        self.combobox_1 = customtkinter.CTkComboBox(values=[""], master= self.sidebar_frame)
         self.combobox_1.grid(row=5, column=0, padx=0, pady=10)
-        self.combobox_2 = customtkinter.CTkComboBox(values=["D", "E", "F"], master= self.sidebar_frame,)
+        self.combobox_2 = customtkinter.CTkComboBox(values=[""], master= self.sidebar_frame,)
         self.combobox_2.grid(row=6, column=0, padx=0, pady=10)
 
         # Create Radiobutton
@@ -79,11 +89,38 @@ class PathFinder(customtkinter.CTk):
         # Create main frame with visualization
         self.main_frame = customtkinter.CTkFrame(self, corner_radius=10)
         self.main_frame.grid(row=0, column=1, sticky="nsew", padx=20, pady=20)
+        self.main_frame.grid_rowconfigure(3, weight=1) #frame maksimal
 
-        # Create Map frame 
+        # Create Answer label
+        self.algorithm_label = customtkinter.CTkLabel(self.main_frame, text="")
+        self.algorithm_label.grid(row=0, column=0, padx=50, pady=(20,20))
 
-        # Create Info Map Frame
-        
+        # Create a frame to hold the graph
+        self.graph_frame = customtkinter.CTkFrame(self.main_frame, corner_radius=10)
+        self.graph_frame.grid(row=1, column=0, padx=50, pady=(20,20))
+
+        # Create a place to put the graph
+        self.place = customtkinter.CTkFrame(self.graph_frame, corner_radius=10)
+        self.place.pack(expand=True, fill=tk.BOTH, anchor=tk.CENTER)
+
+        # Create a frame to hold the graph info
+        self.info = customtkinter.CTkFrame(self.main_frame, corner_radius=10)
+        self.info.grid(row=2, column=0, padx=50, pady=(20,20))
+        self.info.grid_columnconfigure(1, weight=1) #frame maksimal
+
+        # Create Graph Info Label
+        self.graph_info_label = customtkinter.CTkLabel(self.info, text="", font=customtkinter.CTkFont(size=20, weight="bold"))
+        self.graph_info_label.grid(row=0, column=0)
+        self.graph_path_label = customtkinter.CTkLabel(self.info, text="", font=customtkinter.CTkFont(size=20, weight="bold"))
+        self.graph_path_label.grid(row=1, column=0)
+        self.scrollable_label = customtkinter.CTkScrollableFrame(master=self, height=200, width=500, orient="horizontal")
+        self.scrollable_label.grid(row=1, column=1, padx=15, pady=15, sticky="we")
+        self.scrollable_label.grid_rowconfigure(0, weight=1)
+        self.scrollable_label_list = []
+        self.cost_label = customtkinter.CTkLabel(self.info, text="", font=customtkinter.CTkFont(size=20, weight="bold"))
+        self.cost_label.grid(row=2, column=0)
+        self.cost_total_label = customtkinter.CTkLabel(self.info, text="")
+        self.cost_label.grid(row=2, column=1)
 
         # Set default values
         self.appearance_mode_optionMenu.set("Dark")
@@ -100,12 +137,25 @@ class PathFinder(customtkinter.CTk):
         
     def select_map(self):
         self.file_is_selected = False;
-        self.mapName = filedialog.askopenfilename(initialdir="ALGEO02-21077", title="Select a map", filetypes=(("txt files", "*.txt"), ("All Files", "*.*")))
+        self.mapName = filedialog.askopenfilename(title="Select a map", filetypes=(("txt files", "*.txt"), ("All Files", "*.*")))
         self.file_name = os.path.basename(self.mapName)
         self.file_ext = os.path.splitext(self.mapName)[1] # Mengambil ekstensi file
+        self.combobox_1.configure(values=[""])
+        self.combobox_2.configure(values=[""])
         if (self.file_ext==".txt"):
             self.file_is_selected = True;
             self.file_info.configure(text=self.file_name, text_color="green")
+            # call the function with the filename argument
+            self.mtr, self.nodes, self.listnodes = p.parse_into_adjacency_mtr(self.mapName)
+            # Extract the node coordinates from the nodes dictionary
+            self.node_coords = [self.nodes[label] for label in self.listnodes]
+            # create an array to store the values of listnodes
+            array = []
+            # loop through listnodes and append each value to the array
+            for node in self.listnodes:
+                array.append(node)
+            self.combobox_1.configure(values=array)
+            self.combobox_2.configure(values=array)
         else:
             self.file_info.configure(text="Wrong Input File!", text_color="red",  font=customtkinter.CTkFont(size=15, weight="bold"))
 
@@ -121,10 +171,52 @@ class PathFinder(customtkinter.CTk):
                 self.error_info.configure(text="Select Nodes Search!", text_color="red", font=customtkinter.CTkFont(size=15, weight="bold"))
             else:
                 if (selected_value == 0) :
+                    self.algorithm_label.configure(text="A* Algorithm Result", text_color="white",  font=customtkinter.CTkFont(size=30, weight="bold"))
+                    self.visualizeGraph()
+                    self.path, self.cost=UCS_Class.ucs(value1, value2, self.graph)
+                    self.visualizeInfo()
                     print("Run A*")
                 elif (selected_value == 1) :
+                    self.algorithm_label.configure(text="UCS Algorithm Result", text_color="white",  font=customtkinter.CTkFont(size=30, weight="bold"))
+                    self.visualizeGraph()
+                    heuristic = lambda a, b : aStar.euclidean_distance(self.nodes[value1], self.nodes[value2])
+                    self.path, self.cost=aStar_Class.astar(value1, value2, self.graph, heuristic)
+                    self.visualizeInfo()
                     print("Run UCS")
-        
+
+    def visualizeGraph(self):
+        # Create Graph
+        self.graph = p.parse_adjacency_matrix(self.mtr)
+        # Create a matplotlib figure
+        if hasattr(self, "fig"):
+            self.ax.clear()  # clear the previous graph
+        else:
+            self.fig = plt.figure(figsize=(5, 5))
+            self.ax = self.fig.add_subplot(111)
+        # Draw the graph
+        pos = {label: coord for label, coord in zip(self.listnodes, self.node_coords)}
+        nx.draw(self.graph, pos, with_labels=True, ax=self.ax)
+        # Update the canvas
+        if hasattr(self, "canvas"):
+            self.canvas.draw_idle()
+        else:
+            canvas = FigureCanvasTkAgg(self.fig, master=self.place)
+            canvas.draw()
+            canvas.get_tk_widget().pack(expand=True)
+            self.canvas = canvas
+
+    def visualizeInfo(self):
+        self.graph_info_label.configure(text="Result", text_color="white",  font=customtkinter.CTkFont(size=20, weight="bold"))
+        item_list = self.path
+        item_string = "-".join(item_list[:-1]) + item_list[-1]
+        self.graph_path_label.configure(text="Path")
+        self.scrollable_label.configure(item_list=item_string)
+        self.cost_label.configure(text="Distance")
+        self.cost_total_label.configure(text=self.cost)
+
+
 if __name__ == "__main__":
     app = PathFinder()
     app.mainloop()
+                # edge_labels = nx.get_edge_attributes(self.graph, 'weight')
+                # nx.draw_networkx_edge_labels(self.graph, pos, edge_labels=edge_labels)

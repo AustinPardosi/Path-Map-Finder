@@ -101,18 +101,18 @@ class aStar :
 
 ##### MAIN #####
 
-# mtr, nodes, listnodes = parser.parse_into_adjacency_mtr('src/tes.txt')
-# graph = parser.parse_adjacency_matrix(mtr)
+mtr, nodes, listnodes = parser.parse_into_adjacency_mtr('src/tes.txt')
+graph = parser.parse_adjacency_matrix(mtr)
 
 # A*
 # start = 'A'
 # goal = 'F'
-# heuristic = lambda a, b : aStar.euclidean_distance(nodes['A'], nodes['B'])
+# heuristic = lambda a, b : aStar.euclidean_distance(nodes[start], nodes[goal])
 # path = aStar.astar(start, goal, graph, heuristic)
 
 # UCS
-# start = 'A'
-# goal = 'F'
-# path = UCS.ucs(start, goal, graph)
+start = 'A'
+goal = 'F'
+path = UCS.ucs(start, goal, graph)
 
-# print(path)
+print(path)

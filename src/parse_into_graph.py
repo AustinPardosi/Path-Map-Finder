@@ -81,10 +81,10 @@ def print_graph(graph):
         else:
             print(node)
 
-mtr, nodes, listnodes = parse_into_adjacency_mtr('src/tes.txt')
-graph = parse_adjacency_matrix(mtr)
+# mtr, nodes, listnodes = parse_into_adjacency_mtr('src/tes.txt')
+# graph = parse_adjacency_matrix(mtr)
 
-print_graph(graph)
+# print_graph(graph)
 
 # adj_matrix = [
 #     [0, 2, 5, 0, 0, 0, 0, 0],
