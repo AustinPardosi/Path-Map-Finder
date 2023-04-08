@@ -59,7 +59,7 @@ class aStar :
         x2, y2 = b
         return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
-    def astar(start, goal, graph, heuristic):
+    def astar(start, goal, graph, nodes, heuristic):
         # Initialize start node and open set
         open_set = [(0, start)]
 
@@ -87,7 +87,8 @@ class aStar :
                 jarak = gn[currentNode] + graph[currentNode][neighbor]['weight']
 
                 # Calculate f-score of neighbor
-                h_score = heuristic(neighbor, goal)
+                if heuristic :
+                    h_score = aStar.euclidean_distance(nodes[neighbor], nodes[goal])
                 f_score = jarak + h_score
 
                 # If neighbor is not in open set or has lower f-score, update values
@@ -101,18 +102,18 @@ class aStar :
 
 ##### MAIN #####
 
-mtr, nodes, listnodes = parser.parse_into_adjacency_mtr('src/tes.txt')
-graph = parser.parse_adjacency_matrix(mtr)
+# mtr, nodes, listnodes = parser.parse_into_adjacency_mtr('src/tes.txt')
+# graph = parser.parse_adjacency_matrix(mtr)
 
 # A*
 # start = 'A'
 # goal = 'F'
-# heuristic = lambda a, b : aStar.euclidean_distance(nodes[start], nodes[goal])
-# path = aStar.astar(start, goal, graph, heuristic)
+# heuristic = True
+# path = aStar.astar(start, goal, graph, nodes, heuristic)
 
 # UCS
-start = 'A'
-goal = 'F'
-path = UCS.ucs(start, goal, graph)
+# start = 'A'
+# goal = 'F'
+# path = UCS.ucs(start, goal, graph)
 
-print(path)
+# print(path)
