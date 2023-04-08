@@ -1,4 +1,6 @@
 import math
+import networkx as nx
+
 def distance(p1, p2):
     lat1, lon1 = p1
     lat2, lon2 = p2
@@ -18,9 +20,8 @@ def parse_into_adjacency_mtr(filename):
 
 
         m = n + 1
-        print(m)
 
-        matrix = lines[9:]
+        matrix = lines[m:]
         mtr = [[int(x) for x in line.split()] for line in matrix]
 
         for i in range(n) :
@@ -32,34 +33,55 @@ def parse_into_adjacency_mtr(filename):
 
         # print(mtr)
 
-    return mtr
+    return mtr, nodes, listnodes
 
 def parse_adjacency_matrix(adj_matrix):
-    graph = {}
-    countNodes = len(adj_matrix)
+    # graph = {}
+    # countNodes = len(adj_matrix)
 
-    for i in range(countNodes):
+    # for i in range(countNodes):
+    #     node = chr(ord('A') + i)
+    #     edges = {}
+    #     for j in range(countNodes):
+    #         if adj_matrix[i][j] != 0:
+    #             neighbor = chr(ord('A') + j)
+    #             edges[neighbor] = adj_matrix[i][j]
+    #     graph[node] = edges
+
+    graph = nx.Graph()
+    count_nodes = len(adj_matrix)
+
+    # Add nodes to graph
+    for i in range(count_nodes):
         node = chr(ord('A') + i)
-        edges = {}
-        for j in range(countNodes):
+        graph.add_node(node)
+
+    # Add edges to graph
+    for i in range(count_nodes):
+        for j in range(count_nodes):
             if adj_matrix[i][j] != 0:
-                neighbor = chr(ord('A') + j)
-                edges[neighbor] = adj_matrix[i][j]
-        graph[node] = edges
+                node1 = chr(ord('A') + i)
+                node2 = chr(ord('A') + j)
+                weight = adj_matrix[i][j]
+                graph.add_edge(node1, node2, weight=weight)
 
     return graph
 
 def print_graph(graph):
-    for node, edges in graph.items():
-        print(f"{node} -> ", end="")
-        if not edges:
-            print("None")
+    for node in graph.nodes():
+        neighbors = list(graph.neighbors(node))
+        if len(neighbors) > 0:
+            print("{} -> ".format(node), end="")
+            for neighbor in neighbors[:-1]:
+                weight = graph.get_edge_data(node, neighbor)['weight']
+                print("{} ({})".format(neighbor, weight), end=", ")
+            last_neighbor = neighbors[-1]
+            weight = graph.get_edge_data(node, last_neighbor)['weight']
+            print("{} ({})".format(last_neighbor, weight))
         else:
-            for neighbor, weight in edges.items():
-                print(f"{neighbor} ({weight}), ", end="")
-            print()
+            print(node)
 
-mtr = parse_into_adjacency_mtr('src/tes.txt')
+mtr, nodes, listnodes = parse_into_adjacency_mtr('src/tes.txt')
 graph = parse_adjacency_matrix(mtr)
 
 print_graph(graph)
