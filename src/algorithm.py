@@ -1,5 +1,6 @@
 from heapq import heappop, heappush
 import math
+import parse_into_graph as parser
 
 class UCS :
     def ucs(start, goal, graph):
@@ -33,9 +34,9 @@ class UCS :
             explored.add(currentNode)
 
             # Explore the neighbors of the currentNode node
-            for neighbor, neighbor_cost in graph[currentNode].items():
+            for neighbor in graph.neighbors(currentNode):
                 # Calculate the total cost of reaching the neighbor from the start node
-                total_cost = node_cost[currentNode] + neighbor_cost
+                total_cost = node_cost[currentNode] + graph[currentNode][neighbor]['weight']
 
                 # Check if the neighbor is already explored or in the frontier queue with a lower cost
                 if neighbor in explored:
@@ -78,22 +79,40 @@ class aStar :
                 while currentNode:
                     path.append(currentNode)
                     currentNode = parents[currentNode]
-                return path[::-1], gn
+                return path[::-1], jarak
 
             # Check neighbors of currentNode node
-            for neighbor, cost in graph[currentNode]:
+            for neighbor in graph.neighbors(currentNode):
                 # Calculate g-score of neighbor
-                gn = gn[currentNode] + cost
+                jarak = gn[currentNode] + graph[currentNode][neighbor]['weight']
 
                 # Calculate f-score of neighbor
-                hn = heuristic(neighbor, goal)
-                fn = gn + hn
+                h_score = heuristic(neighbor, goal)
+                f_score = jarak + h_score
 
                 # If neighbor is not in open set or has lower f-score, update values
-                if neighbor not in gn or gn < gn[neighbor]:
-                    gn[neighbor] = gn
+                if neighbor not in gn or jarak < gn[neighbor]:
+                    gn[neighbor] = jarak
                     parents[neighbor] = currentNode
-                    heappush(open_set, (fn, neighbor))
+                    heappush(open_set, (f_score, neighbor))
 
         # If goal is not reachable, return empty path
-        return []
+        return [], 0
+
+##### MAIN #####
+
+# mtr, nodes, listnodes = parser.parse_into_adjacency_mtr('src/tes.txt')
+# graph = parser.parse_adjacency_matrix(mtr)
+
+# A*
+# start = 'A'
+# goal = 'F'
+# heuristic = lambda a, b : aStar.euclidean_distance(nodes['A'], nodes['B'])
+# path = aStar.astar(start, goal, graph, heuristic)
+
+# UCS
+# start = 'A'
+# goal = 'F'
+# path = UCS.ucs(start, goal, graph)
+
+# print(path)
