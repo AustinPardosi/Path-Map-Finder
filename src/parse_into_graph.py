@@ -36,18 +36,6 @@ def parse_into_adjacency_mtr(filename):
     return mtr, nodes, listnodes
 
 def parse_adjacency_matrix(adj_matrix):
-    # graph = {}
-    # countNodes = len(adj_matrix)
-
-    # for i in range(countNodes):
-    #     node = chr(ord('A') + i)
-    #     edges = {}
-    #     for j in range(countNodes):
-    #         if adj_matrix[i][j] != 0:
-    #             neighbor = chr(ord('A') + j)
-    #             edges[neighbor] = adj_matrix[i][j]
-    #     graph[node] = edges
-
     graph = nx.Graph()
     count_nodes = len(adj_matrix)
 
