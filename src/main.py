@@ -1,4 +1,4 @@
-from tkinter import filedialog, Canvas
+from tkinter import filedialog, Canvas, ttk
 from PIL import ImageTk, Image
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 # from tkintermapview import TkinterMapView
@@ -12,7 +12,7 @@ import parse_into_graph as p
 import algorithm as a
 from algorithm import UCS, aStar
 
-customtkinter.set_default_color_theme("blue") 
+customtkinter.set_default_color_theme("blue")
 
 # Digunakan untuk membuka path gambar untuk logo pada button
 PATH = os.path.dirname(os.path.realpath(__file__))
@@ -52,7 +52,7 @@ class PathFinder(customtkinter.CTk):
         self.file_info = customtkinter.CTkLabel(self.sidebar_frame, text="")
         self.file_info.grid(row=3, column=0, padx=0, pady=0, sticky="n")
 
-        # Create combobox 
+        # Create combobox
         self.Node_label = customtkinter.CTkLabel(self.sidebar_frame, text="Nodes Search: ", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.Node_label.grid(row=4, column=0, padx=25, pady=(30,0), sticky="w")
         self.combobox_1 = customtkinter.CTkComboBox(values=[""], master= self.sidebar_frame)
@@ -89,8 +89,7 @@ class PathFinder(customtkinter.CTk):
         self.tabview.grid(row=0, column=0, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.tabview.add("Graph")
         self.tabview.add("Map")
-        self.tabview.tab("Graph").grid_columnconfigure(2, weight=1)  # configure grid of individual tabs
-        self.tabview.tab("Graph").grid_rowconfigure(20, weight=10)  # configure grid of individual tabs
+        self.tabview.tab("Graph").grid_columnconfigure(2, weight=2)  # configure grid of individual tabs
         self.tabview.tab("Map").grid_columnconfigure(3, weight=1)
 
         # Create Answer label
@@ -99,7 +98,7 @@ class PathFinder(customtkinter.CTk):
 
         # Create a frame to hold the graph
         self.graph_frame = customtkinter.CTkFrame(self.tabview.tab("Graph"), corner_radius=10)
-        self.graph_frame.grid(row=1, column=0, padx=50, pady=(20,20))
+        self.graph_frame.grid(row=1, column=0, padx=50, rowspan=3)
 
         # Create a place to put the graph
         self.place = customtkinter.CTkFrame(self.graph_frame, corner_radius=10)
@@ -109,9 +108,9 @@ class PathFinder(customtkinter.CTk):
         self.result_label = customtkinter.CTkLabel(self.tabview.tab("Graph"), text="", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.result_label.grid(row=0, column=2)
         self.graph_path_label = customtkinter.CTkLabel(self.tabview.tab("Graph"), text="", font=customtkinter.CTkFont(size=20, weight="bold"))
-        self.graph_path_label.grid(row=1, column=2, sticky="nw")
+        self.graph_path_label.grid(row=1, column=2, sticky="nw", pady=(0,20))
         self.cost_label = customtkinter.CTkLabel(self.tabview.tab("Graph"), text="", font=customtkinter.CTkFont(size=20, weight="bold"))
-        self.cost_label.grid(row=2, column=2, sticky="nw")
+        self.cost_label.grid(row=3, column=2, sticky="nw")
 
         # Set default values
         self.appearance_mode_optionMenu.set("Dark")
@@ -124,7 +123,7 @@ class PathFinder(customtkinter.CTk):
      # Fungsi untuk mengambil gambar logo
     def load_image(self, path, image_size):
         return ImageTk.PhotoImage(Image.open(PATH + path).resize((image_size, image_size)))
-        
+
     def select_map(self):
         self.file_is_selected = False;
         self.mapName = filedialog.askopenfilename(title="Select a map", filetypes=(("txt files", "*.txt"), ("All Files", "*.*")))
@@ -161,17 +160,19 @@ class PathFinder(customtkinter.CTk):
                     self.visualizeGraph()
                     self.path, self.cost = aStar.astar(value1, value2, self.graph, self.nodes, True)
                     self.visualizeInfo()
+                    self.visualizeTable()
                     print("Run A*")
                 elif (selected_value == 1) :
                     self.algorithm_label.configure(text="UCS Algorithm Result", text_color="white",  font=customtkinter.CTkFont(size=30, weight="bold"))
                     self.visualizeGraph()
                     self.path, self.cost = UCS.ucs(value1, value2, self.graph)
                     self.visualizeInfo()
+                    self.visualizeTable()
 
     def visualizeGraph(self):
         self.graph = p.parse_adjacency_matrix(self.mtr)
         if hasattr(self, "fig"):
-            self.ax.clear() 
+            self.ax.clear()
         else:
             self.fig = plt.figure(figsize=(5, 5))
             self.ax = self.fig.add_subplot(111)
@@ -188,7 +189,30 @@ class PathFinder(customtkinter.CTk):
     def visualizeInfo(self):
         self.result_label.configure(text="Result", text_color="white",  font=customtkinter.CTkFont(size=30, weight="bold"))
         self.graph_path_label.configure(text="Path = " + ' - '.join(self.path))
-        self.cost_label.configure(text="Distance = " + str(self.cost))
+        self.cost_label.configure(text="Total Distance = " + str(self.cost))
+
+    def visualizeTable(self):
+        length = len(self.path)
+        arr_distance = [0 for i in range(length-1)]
+        for i in range(length-1):
+            arr_distance[i] = aStar.euclidean_distance(self.nodes[self.path[i]], self.nodes[self.path[i+1]])
+        arr_path = [0 for i in range(length-1)]
+        for i in range(length-1):
+            arr_path[i] = self.path[i] + " - " + self.path[i+1]
+        tuple_list = list(zip(arr_path, arr_distance))
+        # print(tuple_list)
+        self.table = ttk.Treeview(self.tabview.tab("Graph"), show="headings")
+        self.table.grid(row=2, column=2, sticky="nw")
+        self.table['columns'] = ('Nodes', 'Distance')
+        self.table.column('#0', width=0, stretch=tk.NO)
+        self.table.column('Nodes', anchor=tk.CENTER, width=100)
+        self.table.column('Distance', anchor=tk.CENTER, width=100)
+        self.table.heading('#0', text='', anchor=tk.CENTER)
+        self.table.heading('Nodes', text='Nodes', anchor=tk.CENTER)
+        self.table.heading('Distance', text='Distance', anchor=tk.CENTER)
+        for tuple in tuple_list:
+            self.table.insert('', tk.END, value=tuple)
+        self.table.pack()
 
 
 if __name__ == "__main__":
