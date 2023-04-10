@@ -197,14 +197,14 @@ class PathFinder(customtkinter.CTk):
     def visualizeInfo(self):
         self.result_label.configure(text="Result", text_color="white",  font=customtkinter.CTkFont(size=30, weight="bold"))
         self.graph_path_label.configure(text="Path = " + ' - '.join(self.path))
-        self.cost_label.configure(text="Total Distance = " + str(self.cost))
-        self.time_label.configure(text="Execution Time = " + str((self.endTime-self.startTime)*1000) + " milliseconds")
+        self.cost_label.configure(text="Total Distance = " + str(self.cost*100) + " km")
+        self.time_label.configure(text="Execution Time = " + str((self.endTime-self.startTime)*1000) + " ms")
 
     def visualizeTable(self):
         length = len(self.path)
         arr_distance = [0 for i in range(length-1)]
         for i in range(length-1):
-            arr_distance[i] = aStar.find_euclidean_distance(self.nodes[self.path[i]], self.nodes[self.path[i+1]])
+            arr_distance[i] = aStar.find_euclidean_distance(self.nodes[self.path[i]], self.nodes[self.path[i+1]])*100
         arr_path = [0 for i in range(length-1)]
         for i in range(length-1):
             arr_path[i] = self.path[i] + " - " + self.path[i+1]
