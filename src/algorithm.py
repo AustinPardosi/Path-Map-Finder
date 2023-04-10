@@ -50,10 +50,11 @@ class aStar :
 
             if currentNode == goal:
                 shortestPath = []
+                gn = currentPathWithCost[currentNode]
                 while currentNode:
                     shortestPath.append(currentNode)
                     currentNode = parents[currentNode]
-                return shortestPath[::-1], fn
+                return shortestPath[::-1], gn
 
             for neighbor in graph.neighbors(currentNode):
                 gn = currentPathWithCost[currentNode] + graph[currentNode][neighbor]['weight']
@@ -74,15 +75,15 @@ class aStar :
 # mtr, nodes, listnodes = parser.parse_into_adjacency_mtr('src/tes.txt')
 # graph = parser.parse_adjacency_matrix(mtr)
 
-# # A*
-# start = 'A'
-# goal = 'F'
+# A*
+# start = 'D'
+# goal = 'G'
 # heuristic = True
-# path = aStar.astar(start, goal, graph, nodes, heuristic)
+# path, cost = aStar.astar(start, goal, graph, nodes, heuristic)
 
-# # UCS
+# UCS
 # start = 'A'
 # goal = 'F'
-# path = UCS.ucs(start, goal, graph)
+# path, cost = UCS.ucs(start, goal, graph)
 
-# print(path)
+# print(path, cost)
