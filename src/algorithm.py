@@ -102,16 +102,16 @@ class aStar :
 
 ##### MAIN #####
 
-# mtr, nodes, listnodes = parser.parse_into_adjacency_mtr('src/tes.txt')
+# mtr, nodes, listnodes = parser.parse_into_adjacency_mtr('D:\Vs Code\Tucil3_13521063_13521084\src\\tes.txt')
 # graph = parser.parse_adjacency_matrix(mtr)
 
-# A*
-# start = 'A'
-# goal = 'F'
-# heuristic = True
-# path = aStar.astar(start, goal, graph, nodes, heuristic)
+# # A*
+# # start = 'A'
+# # goal = 'F'
+# # heuristic = True
+# # path = aStar.astar(start, goal, graph, nodes, heuristic)
 
-# UCS
+# # UCS
 # start = 'A'
 # goal = 'F'
 # path = UCS.ucs(start, goal, graph)
