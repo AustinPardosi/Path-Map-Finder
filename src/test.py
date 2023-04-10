@@ -1,20 +1,31 @@
 import tkinter as tk
+from tkinter import ttk
 
-root = tk.Tk()
-root.geometry("300x200")
+# buat window
+window = tk.Tk()
+window.title("Tabel dengan CustomTkinter")
 
-# Create a Text widget and set its height and width
-label = tk.Text(root, height=2, width=30, wrap="none")
-label.pack(side="top", fill="both", expand=True)
+# buat Treeview
+table = ttk.Treeview(window)
 
-# Create a Scrollbar widget and attach it to the Text widget
-scrollbar = tk.Scrollbar(root, orient="horizontal")
-scrollbar.pack(side="bottom", fill="x")
+# buat kolom pada tabel
+table["columns"]=("nama", "umur")
 
-label.config(xscrollcommand=scrollbar.set)
-scrollbar.config(command=label.xview)
+# memberi nama pada masing-masing kolom
+table.heading("nama", text="Nama")
+table.heading("umur", text="Umur")
 
-# Insert some text into the Text widget
-label.insert("end", "This is a long label that can be scrolled horizontally if it exceeds the width of the Text widget.")
+# mengatur lebar kolom
+table.column("nama", width=100)
+table.column("umur", width=100)
 
-root.mainloop()
+# menambahkan data pada tabel
+data = [("Andi", 20), ("Budi", 30), ("Cici", 25)]
+for i in range(len(data)):
+    table.insert("", i, text=str(i+1), values=data[i])
+
+# menampilkan tabel
+table.pack()
+
+# jalankan program
+window.mainloop()

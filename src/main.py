@@ -7,9 +7,9 @@ import customtkinter
 import tkinter
 import tkinter as tk
 import os
+import time
 import networkx as nx
 import parse_into_graph as p
-import algorithm as a
 from algorithm import UCS, aStar
 
 customtkinter.set_default_color_theme("blue")
@@ -89,7 +89,9 @@ class PathFinder(customtkinter.CTk):
         self.tabview.grid(row=0, column=0, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.tabview.add("Graph")
         self.tabview.add("Map")
-        self.tabview.tab("Graph").grid_columnconfigure(2, weight=2)  # configure grid of individual tabs
+        self.tabview.tab("Graph").grid_columnconfigure(3, weight=1)  # configure grid of individual tabs
+        self.tabview.tab("Graph").grid_columnconfigure(1, weight=2)  # configure grid of individual tabs
+        self.tabview.tab("Graph").grid_rowconfigure(8, weight=5)  # configure grid of individual tabs
         self.tabview.tab("Map").grid_columnconfigure(3, weight=1)
 
         # Create Answer label
@@ -98,7 +100,7 @@ class PathFinder(customtkinter.CTk):
 
         # Create a frame to hold the graph
         self.graph_frame = customtkinter.CTkFrame(self.tabview.tab("Graph"), corner_radius=10)
-        self.graph_frame.grid(row=1, column=0, padx=50, rowspan=3)
+        self.graph_frame.grid(row=1, column=0, padx=50, pady=10, rowspan=7, sticky="n")
 
         # Create a place to put the graph
         self.place = customtkinter.CTkFrame(self.graph_frame, corner_radius=10)
@@ -110,7 +112,9 @@ class PathFinder(customtkinter.CTk):
         self.graph_path_label = customtkinter.CTkLabel(self.tabview.tab("Graph"), text="", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.graph_path_label.grid(row=1, column=2, sticky="nw", pady=(0,20))
         self.cost_label = customtkinter.CTkLabel(self.tabview.tab("Graph"), text="", font=customtkinter.CTkFont(size=20, weight="bold"))
-        self.cost_label.grid(row=3, column=2, sticky="nw")
+        self.cost_label.grid(row=3, column=2, sticky="nw",pady=(0,20))
+        self.time_label = customtkinter.CTkLabel(self.tabview.tab("Graph"), text="", font=customtkinter.CTkFont(size=20, weight="bold"))
+        self.time_label.grid(row=4, column=2, sticky="nw",pady=0)
 
         # Set default values
         self.appearance_mode_optionMenu.set("Dark")
@@ -133,7 +137,7 @@ class PathFinder(customtkinter.CTk):
         self.combobox_2.configure(values=[""])
         if (self.file_ext==".txt"):
             self.file_is_selected = True;
-            self.file_info.configure(text=self.file_name, text_color="green")
+            self.file_info.configure(text=self.file_name, text_color="green", font=customtkinter.CTkFont(size=15, weight="bold"))
             self.mtr, self.nodes, self.listnodes = p.parse_into_adjacency_mtr(self.mapName)
             self.node_coords = [self.nodes[label] for label in self.listnodes]
             array = []
@@ -158,14 +162,18 @@ class PathFinder(customtkinter.CTk):
                 if (selected_value == 0) :
                     self.algorithm_label.configure(text="A* Algorithm Result", text_color="white",  font=customtkinter.CTkFont(size=30, weight="bold"))
                     self.visualizeGraph()
+                    self.startTime = time.perf_counter()
                     self.path, self.cost = aStar.astar(value1, value2, self.graph, self.nodes, True)
+                    self.endTime = time.perf_counter()
                     self.visualizeInfo()
                     self.visualizeTable()
                     print("Run A*")
                 elif (selected_value == 1) :
                     self.algorithm_label.configure(text="UCS Algorithm Result", text_color="white",  font=customtkinter.CTkFont(size=30, weight="bold"))
                     self.visualizeGraph()
+                    self.startTime = time.perf_counter()
                     self.path, self.cost = UCS.ucs(value1, value2, self.graph)
+                    self.endTime = time.perf_counter()
                     self.visualizeInfo()
                     self.visualizeTable()
 
@@ -190,29 +198,32 @@ class PathFinder(customtkinter.CTk):
         self.result_label.configure(text="Result", text_color="white",  font=customtkinter.CTkFont(size=30, weight="bold"))
         self.graph_path_label.configure(text="Path = " + ' - '.join(self.path))
         self.cost_label.configure(text="Total Distance = " + str(self.cost))
+        self.time_label.configure(text="Execution Time = " + str((self.endTime-self.startTime)*1000) + " milliseconds")
 
     def visualizeTable(self):
         length = len(self.path)
         arr_distance = [0 for i in range(length-1)]
         for i in range(length-1):
-            arr_distance[i] = aStar.euclidean_distance(self.nodes[self.path[i]], self.nodes[self.path[i+1]])
+            arr_distance[i] = aStar.find_euclidean_distance(self.nodes[self.path[i]], self.nodes[self.path[i+1]])
         arr_path = [0 for i in range(length-1)]
         for i in range(length-1):
             arr_path[i] = self.path[i] + " - " + self.path[i+1]
         tuple_list = list(zip(arr_path, arr_distance))
-        # print(tuple_list)
-        self.table = ttk.Treeview(self.tabview.tab("Graph"), show="headings")
-        self.table.grid(row=2, column=2, sticky="nw")
+        style = ttk.Style()
+        style.configure('Treeview', font=('TkDefaultFont', 15), rowheight=20, cellwidth=100)
+        style.configure('Treeview.Heading', font=('TkDefaultFont', 14, 'bold'))
+        self.table = ttk.Treeview(self.tabview.tab("Graph"))
+        self.table.grid(row=2, column=2, sticky="nw", pady=(0,20))
+        self.table['height'] = len(tuple_list)
         self.table['columns'] = ('Nodes', 'Distance')
-        self.table.column('#0', width=0, stretch=tk.NO)
-        self.table.column('Nodes', anchor=tk.CENTER, width=100)
-        self.table.column('Distance', anchor=tk.CENTER, width=100)
-        self.table.heading('#0', text='', anchor=tk.CENTER)
         self.table.heading('Nodes', text='Nodes', anchor=tk.CENTER)
         self.table.heading('Distance', text='Distance', anchor=tk.CENTER)
-        for tuple in tuple_list:
-            self.table.insert('', tk.END, value=tuple)
-        self.table.pack()
+        self.table.column('Nodes', anchor=tk.CENTER, width=200)
+        self.table.column('Distance', anchor=tk.CENTER, width=200)
+        data = tuple_list
+        for i in range(len(data)):
+            self.table.insert('',i, values=data[i])
+        self.table.column('#0', width=0, stretch=tk.NO)
 
 
 if __name__ == "__main__":
