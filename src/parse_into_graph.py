@@ -35,21 +35,21 @@ def parse_into_adjacency_mtr(filename):
 
     return mtr, nodes, listnodes
 
-def parse_adjacency_matrix(adj_matrix):
+def parse_adjacency_matrix(adj_matrix, listnodes):
     graph = nx.Graph()
     count_nodes = len(adj_matrix)
 
     # Add nodes to graph
     for i in range(count_nodes):
-        node = chr(ord('A') + i)
+        node = listnodes[i]
         graph.add_node(node)
 
     # Add edges to graph
     for i in range(count_nodes):
         for j in range(count_nodes):
             if adj_matrix[i][j] != 0:
-                node1 = chr(ord('A') + i)
-                node2 = chr(ord('A') + j)
+                node1 = listnodes[i]
+                node2 = listnodes[j]
                 weight = adj_matrix[i][j]
                 graph.add_edge(node1, node2, weight=weight)
 
@@ -70,7 +70,7 @@ def print_graph(graph):
             print(node)
 
 # mtr, nodes, listnodes = parse_into_adjacency_mtr('src/tes.txt')
-# graph = parse_adjacency_matrix(mtr)
+# graph = parse_adjacency_matrix(mtr, listnodes)
 
 # print_graph(graph)
 
