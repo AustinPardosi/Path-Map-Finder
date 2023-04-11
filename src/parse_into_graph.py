@@ -11,42 +11,36 @@ def parse_into_adjacency_mtr(filename):
     nodes = {}
     with open(filename) as f:
         lines = f.readlines()
-        try :
-            n = int(lines[0].strip())
-            listnodes = []
-            for line in lines[1:n+1]:
-                label, lat, lon = line.strip().split()
-                nodes[label] = (float(lat), float(lon))
-                listnodes.append(label)
+        n = int(lines[0].strip())
+        listnodes = []
+        for line in lines[1:n+1]:
+            label, lat, lon = line.strip().split()
+            nodes[label] = (float(lat), float(lon))
+            listnodes.append(label)
 
-            if (len(listnodes) < 8) :
-                raise ValueError("There should be at least 8 nodes.")
-            if (len(listnodes) != n) :
-                raise ValueError(f'There should be {n} nodes')
+        if (len(listnodes) < 8) :
+            raise ValueError("Jumlah Simpul < 8")
+        if (len(listnodes) != n) :
+            raise ValueError(f'Jumlah Simpul {n}!')
 
-            m = n + 1
+        m = n + 1
 
-            matrix = lines[m:]
-            mtr = [[int(x) for x in line.split()] for line in matrix]
+        matrix = lines[m:]
+        mtr = [[int(x) for x in line.split()] for line in matrix]
 
-            if len(mtr) != n or len(mtr[0]) != n:
-                raise ValueError("The adjacency matrix should be a square matrix with dimensions n x n.")
-            if any(mtr[i][i] != 0 for i in range(n)):
-                raise ValueError("The diagonal elements of the adjacency matrix should be zero.")
+        if len(mtr) != n or len(mtr[0]) != n:
+            raise ValueError("n Row != n Col")
+        if any(mtr[i][i] != 0 for i in range(n)):
+            raise ValueError("Diagonal Utama != 0")
 
-            for i in range(n) :
-                for j in range(n) :
-                    if mtr[i][j] == 1 :
-                        p1 = nodes[listnodes[j]]
-                        p2 = nodes[listnodes[i]]
-                        mtr[i][j] = distance(p1, p2)
+        for i in range(n) :
+            for j in range(n) :
+                if mtr[i][j] == 1 :
+                    p1 = nodes[listnodes[j]]
+                    p2 = nodes[listnodes[i]]
+                    mtr[i][j] = distance(p1, p2)
 
-            return mtr, nodes, listnodes
-
-        except FileNotFoundError:
-            print(f"Error: file '{filename}' not found.")
-        except ValueError as e:
-            print(f"Error: {e}")
+        return mtr, nodes, listnodes
 
 def parse_adjacency_matrix(adj_matrix, listnodes):
     graph = nx.Graph()

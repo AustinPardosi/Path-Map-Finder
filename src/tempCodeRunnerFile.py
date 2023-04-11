@@ -1,0 +1,1 @@
+                # self.table.insert('',i, values=data[i])
