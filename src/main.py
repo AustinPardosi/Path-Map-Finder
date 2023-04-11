@@ -231,7 +231,7 @@ class PathFinder(customtkinter.CTk):
             arr_path[i] = self.path[i] + " - " + self.path[i+1]
         tuple_list = list(zip(arr_path, arr_distance))
         style = ttk.Style()
-        style.configure('Treeview', font=('TkDefaultFont', 15), rowheight=20, cellwidth=100)
+        style.configure('Treeview', font=('TkDefaultFont', 15), rowheight=30, cellwidth=300)
         style.configure('Treeview.Heading', font=('TkDefaultFont', 14, 'bold'))
         self.table = ttk.Treeview(self.tabview.tab("Graph"))
         self.table.grid(row=2, column=2, sticky="nw", pady=(0,20))
@@ -239,16 +239,12 @@ class PathFinder(customtkinter.CTk):
         self.table['columns'] = ('Nodes', 'Distance')
         self.table.heading('Nodes', text='Nodes', anchor=tk.CENTER)
         self.table.heading('Distance', text='Distance', anchor=tk.CENTER)
-        self.table.column('Nodes', anchor=tk.CENTER, width=200)
+        self.table.column('#0', width=0, stretch=tk.NO)
+        self.table.column('Nodes', anchor=tk.CENTER, width=400)
         self.table.column('Distance', anchor=tk.CENTER, width=200)
         data = tuple_list
-        empty = ('-', 0)
-        if (length == 1):
-            self.table.insert('', 'end', values=empty)
-        else:
-            for i in range(len(data)):
-                self.table.insert('',i, values=data[i])
-        self.table.column('#0', width=0, stretch=tk.NO)
+        for i in range(len(data)):
+            self.table.insert('',i, values=data[i])
 
     # Digunakan untuk memvisualisasikan map {Bonus}
     def visualizeMap(self):

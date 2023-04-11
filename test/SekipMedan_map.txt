@@ -1,0 +1,17 @@
+8
+CarrefourMedanFair 3.5913 98.66331
+SekipSimpangGatsu 3.59306 98.66769
+PerempatanGatsu 3.59341 98.66882
+AdamMalikSimpangMayang 3.5947 98.66889
+PizzaHutAdamMalik 3.59562 98.66895
+KalamKudusMedan 3.59476 98.6668
+SekipSimpangMayang 3.59476 98.66643
+UnpriSekip 3.59655 98.6652
+0 1 0 0 0 0 0 0
+1 0 1 0 0 0 1 0
+0 1 0 1 0 0 0 0
+0 0 1 0 1 1 0 0
+0 0 0 1 0 0 0 0
+0 0 0 1 0 0 1 0
+0 1 0 0 0 1 0 1
+0 0 0 0 0 0 1 0
