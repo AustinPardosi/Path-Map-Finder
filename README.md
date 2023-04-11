@@ -13,6 +13,14 @@ Repository Tugas Kecil 3 Mata Kuliah Strategi Algoritma
 * [Contacts](#contacts)
 
 ## General Information
+<div align="center">
+    <h2>BNMO</h2>
+    <p>oleh Kelompok K</p>
+    <img src="img/GUI_1.png" alt="1" style="max-width:20em;"></img>
+    <img src="img/GUI_2.png" alt="2" style="max-width:20em;"></img>
+    <br/>
+    <br/>
+</div>
 Map Finder adalah sebuah program untuk menentukan lintasan terpendek berdasarkan peta Google Map dari suatu titik ke titik lain dengan menerapkan Algoritma UCS (Uniform cost search) dan A* (atau A star) untuk penyelesaiannya.
 
 Repository ini dibuat dan mengandung file yang dibutuhkan untuk menyelesaikan Tugas Kecil 3 IF2211 Strategi Algoritma.
