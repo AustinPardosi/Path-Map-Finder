@@ -1,7 +1,7 @@
 from tkinter import filedialog, Canvas, ttk
 from PIL import ImageTk, Image
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-# from tkintermapview import TkinterMapView
+from tkintermapview import TkinterMapView
 import matplotlib.pyplot as plt
 import customtkinter
 import tkinter
@@ -92,7 +92,11 @@ class PathFinder(customtkinter.CTk):
         self.tabview.tab("Graph").grid_columnconfigure(3, weight=1)  # configure grid of individual tabs
         self.tabview.tab("Graph").grid_columnconfigure(1, weight=2)  # configure grid of individual tabs
         self.tabview.tab("Graph").grid_rowconfigure(8, weight=5)  # configure grid of individual tabs
-        self.tabview.tab("Map").grid_columnconfigure(3, weight=1)
+        self.tabview.tab("Map").grid_rowconfigure(1, weight=1)
+        self.tabview.tab("Map").grid_rowconfigure(0, weight=0)
+        self.tabview.tab("Map").grid_columnconfigure(0, weight=1)
+        self.tabview.tab("Map").grid_columnconfigure(1, weight=0)
+        self.tabview.tab("Map").grid_columnconfigure(2, weight=1)
 
         # Create Answer label
         self.algorithm_label = customtkinter.CTkLabel(self.tabview.tab("Graph"), text="")
@@ -115,6 +119,22 @@ class PathFinder(customtkinter.CTk):
         self.cost_label.grid(row=3, column=2, sticky="nw",pady=(0,20))
         self.time_label = customtkinter.CTkLabel(self.tabview.tab("Graph"), text="", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.time_label.grid(row=4, column=2, sticky="nw",pady=0)
+
+        # Cretae Map
+        self.map_widget = TkinterMapView(self.tabview.tab("Map"), corner_radius=0)
+        self.map_widget.grid(row=1, rowspan=1, column=0, columnspan=3, sticky="nswe", padx=(0, 0), pady=(0, 0))
+        # self.set_marker_event([(-6.921225810210987, 107.60778979494542), (-6.922562471707714, 107.6076125484464), (-6.921050087008278, 107.60647682029175), (-6.921423536836135, 107.60979984295757), (-6.91888940718999, 107.60668282978516), (-6.919565176421793, 107.60834881958527), (-6.919668157569195, 107.60993360027706), (-6.916257020770534, 107.60897256784462)])
+        locations = [
+            [-6.921225810210987, 107.60778979494542, "Brandenburger Tor"],
+            [-6.922562471707714, 107.6076125484464, "Some Location"],
+            [-6.921050087008278, 107.60647682029175, "Another Location"]
+        ]
+        lat, lng = locations[0][:2]
+        self.map_widget.set_position(lat, lng)
+        self.map_widget.set_zoom(18)
+        for loc in locations:
+            marker = self.map_widget.set_marker(loc[0], loc[1], text=loc[2])
+        path_1 = self.map_widget.set_path([(-6.921225810210987, 107.60778979494542), (-6.922562471707714, 107.6076125484464)])
 
         # Set default values
         self.appearance_mode_optionMenu.set("Dark")
@@ -176,7 +196,6 @@ class PathFinder(customtkinter.CTk):
                     self.endTime = time.perf_counter()
                     self.visualizeInfo()
                     self.visualizeTable()
-
     def visualizeGraph(self):
         self.graph = p.parse_adjacency_matrix(self.mtr)
         if hasattr(self, "fig"):
@@ -224,6 +243,11 @@ class PathFinder(customtkinter.CTk):
         for i in range(len(data)):
             self.table.insert('',i, values=data[i])
         self.table.column('#0', width=0, stretch=tk.NO)
+
+    def set_marker_event(self, coordinates):
+        for lat, lon in coordinates:
+            self.marker_list.append(self.map_widget.set_marker(lat, lon))
+
 
 
 if __name__ == "__main__":
