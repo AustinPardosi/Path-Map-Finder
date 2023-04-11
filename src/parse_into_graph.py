@@ -19,11 +19,20 @@ def parse_into_adjacency_mtr(filename):
                 nodes[label] = (float(lat), float(lon))
                 listnodes.append(label)
 
+            if (len(listnodes) < 8) :
+                raise ValueError("There should be at least 8 nodes.")
+            if (len(listnodes) != n) :
+                raise ValueError(f'There should be {n} nodes')
 
             m = n + 1
 
             matrix = lines[m:]
             mtr = [[int(x) for x in line.split()] for line in matrix]
+
+            if len(mtr) != n or len(mtr[0]) != n:
+                raise ValueError("The adjacency matrix should be a square matrix with dimensions n x n.")
+            if any(mtr[i][i] != 0 for i in range(n)):
+                raise ValueError("The diagonal elements of the adjacency matrix should be zero.")
 
             for i in range(n) :
                 for j in range(n) :
@@ -34,9 +43,10 @@ def parse_into_adjacency_mtr(filename):
 
             return mtr, nodes, listnodes
 
-        except (ValueError, IndexError) as e:
-            print("Invalid input format:", e)
-            return None, None, None
+        except FileNotFoundError:
+            print(f"Error: file '{filename}' not found.")
+        except ValueError as e:
+            print(f"Error: {e}")
 
 def parse_adjacency_matrix(adj_matrix, listnodes):
     graph = nx.Graph()
