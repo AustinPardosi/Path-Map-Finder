@@ -121,20 +121,6 @@ class PathFinder(customtkinter.CTk):
         self.time_label.grid(row=4, column=2, sticky="nw",pady=0)
 
         # Cretae Map
-        self.map_widget = TkinterMapView(self.tabview.tab("Map"), corner_radius=0)
-        self.map_widget.grid(row=1, rowspan=1, column=0, columnspan=3, sticky="nswe", padx=(0, 0), pady=(0, 0))
-        # self.set_marker_event([(-6.921225810210987, 107.60778979494542), (-6.922562471707714, 107.6076125484464), (-6.921050087008278, 107.60647682029175), (-6.921423536836135, 107.60979984295757), (-6.91888940718999, 107.60668282978516), (-6.919565176421793, 107.60834881958527), (-6.919668157569195, 107.60993360027706), (-6.916257020770534, 107.60897256784462)])
-        locations = [
-            [-6.921225810210987, 107.60778979494542, "Brandenburger Tor"],
-            [-6.922562471707714, 107.6076125484464, "Some Location"],
-            [-6.921050087008278, 107.60647682029175, "Another Location"]
-        ]
-        lat, lng = locations[0][:2]
-        self.map_widget.set_position(lat, lng)
-        self.map_widget.set_zoom(18)
-        for loc in locations:
-            marker = self.map_widget.set_marker(loc[0], loc[1], text=loc[2])
-        path_1 = self.map_widget.set_path([(-6.921225810210987, 107.60778979494542), (-6.922562471707714, 107.6076125484464)])
 
         # Set default values
         self.appearance_mode_optionMenu.set("Dark")
@@ -187,6 +173,7 @@ class PathFinder(customtkinter.CTk):
                     self.endTime = time.perf_counter()
                     self.visualizeInfo()
                     self.visualizeTable()
+                    self.visualizeMap()
                     print("Run A*")
                 elif (selected_value == 1) :
                     self.algorithm_label.configure(text="UCS Algorithm Result", text_color="white",  font=customtkinter.CTkFont(size=30, weight="bold"))
@@ -196,6 +183,8 @@ class PathFinder(customtkinter.CTk):
                     self.endTime = time.perf_counter()
                     self.visualizeInfo()
                     self.visualizeTable()
+                    self.visualizeMap()
+
     def visualizeGraph(self):
         self.graph = p.parse_adjacency_matrix(self.mtr)
         if hasattr(self, "fig"):
@@ -244,12 +233,26 @@ class PathFinder(customtkinter.CTk):
             self.table.insert('',i, values=data[i])
         self.table.column('#0', width=0, stretch=tk.NO)
 
-    def set_marker_event(self, coordinates):
-        for lat, lon in coordinates:
-            self.marker_list.append(self.map_widget.set_marker(lat, lon))
+    def show_path(self):
+        self.map_list = list(zip(self.node_coords, self.listnodes))
 
-
+    def visualizeMap(self):
+        self.map_widget = TkinterMapView(self.tabview.tab("Map"), corner_radius=0)
+        self.map_widget.grid(row=1, rowspan=1, column=0, columnspan=3, sticky="nswe", padx=(0, 0), pady=(0, 0))
+        locations = self.node_coords
+        loc_text = self.listnodes
+        lat, lng = locations[0][:2]
+        self.map_widget.set_position(lat, lng)
+        self.map_widget.set_zoom(15)
+        for loc in locations:
+            lat, lng = loc[0], loc[1]
+            marker = self.map_widget.set_marker(lat, lng, text=loc_text[locations.index(loc)])
+        for i in range(len(self.path)-1):
+            lat, lng = self.nodes[self.path[i]], self.nodes[self.path[i+1]]
+            marker = self.map_widget.set_path([lat, lng], color="blue")
 
 if __name__ == "__main__":
     app = PathFinder()
     app.mainloop()
+
+# [(40.45585884896389, -3.690306483247556), (40.45585884896389, -3.690306483247556)]
