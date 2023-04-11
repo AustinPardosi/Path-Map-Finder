@@ -11,29 +11,32 @@ def parse_into_adjacency_mtr(filename):
     nodes = {}
     with open(filename) as f:
         lines = f.readlines()
-        n = int(lines[0].strip())
-        listnodes = []
-        for line in lines[1:n+1]:
-            label, lat, lon = line.strip().split()
-            nodes[label] = (float(lat), float(lon))
-            listnodes.append(label)
+        try :
+            n = int(lines[0].strip())
+            listnodes = []
+            for line in lines[1:n+1]:
+                label, lat, lon = line.strip().split()
+                nodes[label] = (float(lat), float(lon))
+                listnodes.append(label)
 
 
-        m = n + 1
+            m = n + 1
 
-        matrix = lines[m:]
-        mtr = [[int(x) for x in line.split()] for line in matrix]
+            matrix = lines[m:]
+            mtr = [[int(x) for x in line.split()] for line in matrix]
 
-        for i in range(n) :
-            for j in range(n) :
-                if mtr[i][j] == 1 :
-                    p1 = nodes[listnodes[j]]
-                    p2 = nodes[listnodes[i]]
-                    mtr[i][j] = distance(p1, p2)
+            for i in range(n) :
+                for j in range(n) :
+                    if mtr[i][j] == 1 :
+                        p1 = nodes[listnodes[j]]
+                        p2 = nodes[listnodes[i]]
+                        mtr[i][j] = distance(p1, p2)
 
-        # print(mtr)
+            return mtr, nodes, listnodes
 
-    return mtr, nodes, listnodes
+        except (ValueError, IndexError) as e:
+            print("Invalid input format:", e)
+            return None, None, None
 
 def parse_adjacency_matrix(adj_matrix, listnodes):
     graph = nx.Graph()
