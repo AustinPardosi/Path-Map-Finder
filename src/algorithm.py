@@ -21,16 +21,18 @@ class UCS :
             visited.append(currentNode)
 
             for neighbor in graph.neighbors(currentNode):
-                total_cost = cost[currentNode] + graph[currentNode][neighbor]['weight']
+                # total_cost = cost[currentNode] + graph[currentNode][neighbor]['weight']
 
                 if neighbor in visited:
                     continue
-                if (total_cost, neighbor) in nodesToExplore:
-                    continue
+                # if (total_cost, neighbor) in nodesToExplore:
+                #     continue
 
-                cost[neighbor] = total_cost
-                parents[neighbor] = currentNode
-                heappush(nodesToExplore, (total_cost, neighbor))
+                newCost = cost[currentNode] + graph[currentNode][neighbor]['weight']
+                if neighbor not in cost or newCost < cost[neighbor]:
+                    cost[neighbor] = newCost
+                    parents[neighbor] = currentNode
+                    heappush(nodesToExplore, (newCost, neighbor))
 
         return [], 0
 
@@ -73,17 +75,18 @@ class aStar :
 ##### MAIN #####
 
 # mtr, nodes, listnodes = parser.parse_into_adjacency_mtr('src/tes.txt')
-# graph = parser.parse_adjacency_matrix(mtr)
+# graph = parser.parse_adjacency_matrix(mtr, listnodes)
 
 # A*
-# start = 'D'
-# goal = 'G'
+# start = 'A'
+# goal = 'H'
 # heuristic = True
 # path, cost = aStar.astar(start, goal, graph, nodes, heuristic)
 
 # UCS
-# start = 'A'
-# goal = 'F'
+# start = 'D'
+# goal = 'H'
 # path, cost = UCS.ucs(start, goal, graph)
 
 # print(path, cost)
+# parser.print_graph(graph)
