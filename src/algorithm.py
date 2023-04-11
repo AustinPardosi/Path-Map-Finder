@@ -21,12 +21,8 @@ class UCS :
             visited.append(currentNode)
 
             for neighbor in graph.neighbors(currentNode):
-                # total_cost = cost[currentNode] + graph[currentNode][neighbor]['weight']
-
                 if neighbor in visited:
                     continue
-                # if (total_cost, neighbor) in nodesToExplore:
-                #     continue
 
                 newCost = cost[currentNode] + graph[currentNode][neighbor]['weight']
                 if neighbor not in cost or newCost < cost[neighbor]:
