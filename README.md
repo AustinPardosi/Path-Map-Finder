@@ -1,4 +1,4 @@
-# Tucil2_13521063_13521084
+# Tucil3_13521063_13521084
 Repository Tugas Kecil 3 Mata Kuliah Strategi Algoritma
 
 ## Table of Contents
@@ -14,8 +14,7 @@ Repository Tugas Kecil 3 Mata Kuliah Strategi Algoritma
 
 ## General Information
 <div align="center">
-    <h2>BNMO</h2>
-    <p>oleh Kelompok K</p>
+    <h2>Path Map Finder</h2>
     <img src="img/GUI_1.png" alt="1" style="max-width:20em;"></img>
     <img src="img/GUI_2.png" alt="2" style="max-width:20em;"></img>
     <br/>
