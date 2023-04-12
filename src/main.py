@@ -3,6 +3,7 @@ from PIL import Image
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkintermapview import TkinterMapView
 from algorithm import UCS, aStar
+from tabulate import tabulate
 import matplotlib.pyplot as plt
 import customtkinter
 import tkinter
@@ -194,6 +195,9 @@ class PathFinder(customtkinter.CTk):
                     self.visualizeInfo()
                     self.visualizeTable()
                     self.visualizeMap()
+        # Membuat Button Print CLI
+        self.button_cli = customtkinter.CTkButton(self.tabview.tab("Graph"), height=40, width=130, text="Print To CLI", command=self.print_cli)
+        self.button_cli.grid(row=7, column=2, padx=0, pady=0)
 
     # Digunakan untuk memvisualisasikan Graph
     def visualizeGraph(self):
@@ -218,18 +222,18 @@ class PathFinder(customtkinter.CTk):
         self.result_label.configure(text="Result", text_color="white",  font=customtkinter.CTkFont(size=30, weight="bold"))
         MAX_PATH_LENGTH = 60 # maksimum jumlah karakter yang ditampilkan di graph_path_label
 
-        path_str = ' - '.join(self.path)
+        path_str = ' -> '.join(self.path)
         if len(path_str) > MAX_PATH_LENGTH:
             start = self.path[0]
             end = self.path[-1]
             middle = "..."
             middle_len = MAX_PATH_LENGTH - len(start) - len(end) - len(middle)
             middle_idx = len(self.path) // 2
-            path_str1 = " - ".join(self.path[:middle_idx]) + " - " + middle
-            path_str2 = middle + " - " + " - ".join(self.path[middle_idx+1:])
+            path_str1 = " -> ".join(self.path[:middle_idx]) + " - " + middle
+            path_str2 = middle + " - " + " -> ".join(self.path[middle_idx+1:])
             self.graph_path_label.configure(text="Path = " + path_str1 + "\n" + path_str2)
         else:
-            self.graph_path_label.configure(text="Path = " + ' - '.join(self.path))
+            self.graph_path_label.configure(text="Path = " + ' -> '.join(self.path))
         # self.graph_path_label.configure(text="Path = " + ' - '.join(self.path))
         self.cost_label.configure(text="Total Distance = " + str(self.cost*100) + " km")
         self.time_label.configure(text="Execution Time = " + str((self.endTime-self.startTime)*1000) + " ms")
@@ -275,6 +279,20 @@ class PathFinder(customtkinter.CTk):
         for i in range(len(self.path)-1):
             lat, lng = self.nodes[self.path[i]], self.nodes[self.path[i+1]]
             marker = self.map_widget.set_path([lat, lng], color="blue")
+
+    def print_cli(self):
+        Header = ["Result", "Value"]
+        table_data = [["Path", ' -> '.join(self.path)],
+                      ["Total Distance", str(self.cost*100) + " km"],
+                      ["Execution Time", str((self.endTime-self.startTime)*1000) + " ms"]]
+        
+        print("")
+        print("="*(len(' -> '.join(self.path))+20))
+        print("")
+        print(tabulate(table_data, headers=Header, tablefmt="fancy_grid"))
+        print("")
+        print("="*(len(' -> '.join(self.path))+20))
+        print("")
 
 if __name__ == "__main__":
     app = PathFinder()
