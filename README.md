@@ -17,6 +17,7 @@ Repository Tugas Kecil 3 Mata Kuliah Strategi Algoritma
     <h2>Path Map Finder</h2>
     <img src="img/GUI_1.png" alt="1" style="max-width:20em;"></img>
     <img src="img/GUI_2.png" alt="2" style="max-width:20em;"></img>
+    <img src="img/CLI.png" alt="2" style="max-width:20em;"></img>
     <br/>
     <br/>
 </div>
@@ -76,6 +77,7 @@ Author:
     4. pip3 install pillow
     5. pip3 install tkintermapview
     6. pip3 install customtkinter
+    7. pip3 install tabulate
 
 ## How to Compile and Run
 Setelah setup berhasil dilakukan, ikuti langkah dibawah untuk menjalankan program:
@@ -90,6 +92,7 @@ Cara menggunakan:
 - Tekan button execute
 - Jika ingin melihat tampilan OpenStreetMap, silahkan tekan button Map
 - Jika ingin mengubah tampilan mode: Dark/Light, silahkan tekan button Theme Mode <br>
+- Jika ingin melihat tampilan di CLI, silahkan tekan button Print To CLI <br>
 
 ## Project Status
 Proyek ini telah selesai secara utuh (Completed).

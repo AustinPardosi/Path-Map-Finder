@@ -178,6 +178,7 @@ class PathFinder(customtkinter.CTk):
                 self.error_info.configure(text="Select Nodes Search!", text_color="red", font=customtkinter.CTkFont(size=15, weight="bold"))
             else:
                 if (selected_value == 0) :
+                    self.algo = "A* (A Star)"
                     self.algorithm_label.configure(text="A* Algorithm Result", text_color="white",  font=customtkinter.CTkFont(size=30, weight="bold"))
                     self.visualizeGraph()
                     self.startTime = time.perf_counter()
@@ -187,6 +188,7 @@ class PathFinder(customtkinter.CTk):
                     self.visualizeTable()
                     self.visualizeMap()
                 elif (selected_value == 1) :
+                    self.algo = "UCS (Uniform cost search)"
                     self.algorithm_label.configure(text="UCS Algorithm Result", text_color="white",  font=customtkinter.CTkFont(size=30, weight="bold"))
                     self.visualizeGraph()
                     self.startTime = time.perf_counter()
@@ -281,15 +283,22 @@ class PathFinder(customtkinter.CTk):
             marker = self.map_widget.set_path([lat, lng], color="blue")
 
     def print_cli(self):
-        Header = ["Result", "Value"]
-        table_data = [["Path", ' -> '.join(self.path)],
+        answer_Header = ["Result", "Value"]
+        question_Header = ["Variable", "Value"]
+        question_table_data = [["Map", self.file_name],
+                               ["Start Point", self.combobox_1.get()],
+                               ["End Point", self.combobox_2.get()],
+                               ["Algorithm", self.algo]]
+        answer_table_data = [["Path", ' -> '.join(self.path)],
                       ["Total Distance", str(self.cost*100) + " km"],
                       ["Execution Time", str((self.endTime-self.startTime)*1000) + " ms"]]
         
         print("")
         print("="*(len(' -> '.join(self.path))+20))
         print("")
-        print(tabulate(table_data, headers=Header, tablefmt="fancy_grid"))
+        print(tabulate(question_table_data, headers=question_Header, tablefmt="fancy_grid"))
+        print("")
+        print(tabulate(answer_table_data, headers=answer_Header, tablefmt="fancy_grid"))
         print("")
         print("="*(len(' -> '.join(self.path))+20))
         print("")
