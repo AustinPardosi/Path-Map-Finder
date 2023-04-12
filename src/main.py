@@ -3,6 +3,7 @@ from PIL import Image
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkintermapview import TkinterMapView
 from algorithm import UCS, aStar
+from tabulate import tabulate
 import matplotlib.pyplot as plt
 import customtkinter
 import tkinter
@@ -86,7 +87,7 @@ class PathFinder(customtkinter.CTk):
         self.main_frame.grid(row=0, column=1, sticky="nsew", padx=20, pady=20)
 
         # Membuat tabview
-        self.tabview = customtkinter.CTkTabview(self.main_frame, width=1230, height=700)
+        self.tabview = customtkinter.CTkTabview(self.main_frame, width=1230, height=700, segmented_button_selected_hover_color="red")
         self.tabview.grid(row=0, column=0, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.tabview.add("Graph")
         self.tabview.add("Map")
@@ -177,6 +178,7 @@ class PathFinder(customtkinter.CTk):
                 self.error_info.configure(text="Select Nodes Search!", text_color="red", font=customtkinter.CTkFont(size=15, weight="bold"))
             else:
                 if (selected_value == 0) :
+                    self.algo = "A* (A Star)"
                     self.algorithm_label.configure(text="A* Algorithm Result", text_color="white",  font=customtkinter.CTkFont(size=30, weight="bold"))
                     self.visualizeGraph()
                     self.startTime = time.perf_counter()
@@ -186,6 +188,7 @@ class PathFinder(customtkinter.CTk):
                     self.visualizeTable()
                     self.visualizeMap()
                 elif (selected_value == 1) :
+                    self.algo = "UCS (Uniform cost search)"
                     self.algorithm_label.configure(text="UCS Algorithm Result", text_color="white",  font=customtkinter.CTkFont(size=30, weight="bold"))
                     self.visualizeGraph()
                     self.startTime = time.perf_counter()
@@ -194,6 +197,9 @@ class PathFinder(customtkinter.CTk):
                     self.visualizeInfo()
                     self.visualizeTable()
                     self.visualizeMap()
+        # Membuat Button Print CLI
+        self.button_cli = customtkinter.CTkButton(self.tabview.tab("Graph"), height=40, width=130, text="Print To CLI", command=self.print_cli)
+        self.button_cli.grid(row=7, column=2, padx=0, pady=0)
 
     # Digunakan untuk memvisualisasikan Graph
     def visualizeGraph(self):
@@ -216,7 +222,21 @@ class PathFinder(customtkinter.CTk):
     # Digunakan untuk memvisualisasikan Path, Distance, dan Execution Time
     def visualizeInfo(self):
         self.result_label.configure(text="Result", text_color="white",  font=customtkinter.CTkFont(size=30, weight="bold"))
-        self.graph_path_label.configure(text="Path = " + ' - '.join(self.path))
+        MAX_PATH_LENGTH = 60 # maksimum jumlah karakter yang ditampilkan di graph_path_label
+
+        path_str = ' -> '.join(self.path)
+        if len(path_str) > MAX_PATH_LENGTH:
+            start = self.path[0]
+            end = self.path[-1]
+            middle = "..."
+            middle_len = MAX_PATH_LENGTH - len(start) - len(end) - len(middle)
+            middle_idx = len(self.path) // 2
+            path_str1 = " -> ".join(self.path[:middle_idx]) + " - " + middle
+            path_str2 = middle + " - " + " -> ".join(self.path[middle_idx+1:])
+            self.graph_path_label.configure(text="Path = " + path_str1 + "\n" + path_str2)
+        else:
+            self.graph_path_label.configure(text="Path = " + ' -> '.join(self.path))
+        # self.graph_path_label.configure(text="Path = " + ' - '.join(self.path))
         self.cost_label.configure(text="Total Distance = " + str(self.cost*100) + " km")
         self.time_label.configure(text="Execution Time = " + str((self.endTime-self.startTime)*1000) + " ms")
 
@@ -262,6 +282,28 @@ class PathFinder(customtkinter.CTk):
             lat, lng = self.nodes[self.path[i]], self.nodes[self.path[i+1]]
             marker = self.map_widget.set_path([lat, lng], color="blue")
 
+    def print_cli(self):
+        answer_Header = ["Result", "Value"]
+        question_Header = ["Variable", "Value"]
+        question_table_data = [["Map", self.file_name],
+                               ["Start Point", self.combobox_1.get()],
+                               ["End Point", self.combobox_2.get()],
+                               ["Algorithm", self.algo]]
+        answer_table_data = [["Path", ' -> '.join(self.path)],
+                      ["Total Distance", str(self.cost*100) + " km"],
+                      ["Execution Time", str((self.endTime-self.startTime)*1000) + " ms"]]
+        
+        print("")
+        print("="*(len(' -> '.join(self.path))+20))
+        print("")
+        print(tabulate(question_table_data, headers=question_Header, tablefmt="fancy_grid"))
+        print("")
+        print(tabulate(answer_table_data, headers=answer_Header, tablefmt="fancy_grid"))
+        print("")
+        print("="*(len(' -> '.join(self.path))+20))
+        print("")
+
 if __name__ == "__main__":
     app = PathFinder()
+    app.protocol("WM_DELETE_WINDOW", app.quit)
     app.mainloop()
