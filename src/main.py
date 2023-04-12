@@ -86,7 +86,7 @@ class PathFinder(customtkinter.CTk):
         self.main_frame.grid(row=0, column=1, sticky="nsew", padx=20, pady=20)
 
         # Membuat tabview
-        self.tabview = customtkinter.CTkTabview(self.main_frame, width=1230, height=700)
+        self.tabview = customtkinter.CTkTabview(self.main_frame, width=1230, height=700, segmented_button_selected_hover_color="red")
         self.tabview.grid(row=0, column=0, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.tabview.add("Graph")
         self.tabview.add("Map")
@@ -216,7 +216,21 @@ class PathFinder(customtkinter.CTk):
     # Digunakan untuk memvisualisasikan Path, Distance, dan Execution Time
     def visualizeInfo(self):
         self.result_label.configure(text="Result", text_color="white",  font=customtkinter.CTkFont(size=30, weight="bold"))
-        self.graph_path_label.configure(text="Path = " + ' - '.join(self.path))
+        MAX_PATH_LENGTH = 60 # maksimum jumlah karakter yang ditampilkan di graph_path_label
+
+        path_str = ' - '.join(self.path)
+        if len(path_str) > MAX_PATH_LENGTH:
+            start = self.path[0]
+            end = self.path[-1]
+            middle = "..."
+            middle_len = MAX_PATH_LENGTH - len(start) - len(end) - len(middle)
+            middle_idx = len(self.path) // 2
+            path_str1 = " - ".join(self.path[:middle_idx]) + " - " + middle
+            path_str2 = middle + " - " + " - ".join(self.path[middle_idx+1:])
+            self.graph_path_label.configure(text="Path = " + path_str1 + "\n" + path_str2)
+        else:
+            self.graph_path_label.configure(text="Path = " + ' - '.join(self.path))
+        # self.graph_path_label.configure(text="Path = " + ' - '.join(self.path))
         self.cost_label.configure(text="Total Distance = " + str(self.cost*100) + " km")
         self.time_label.configure(text="Execution Time = " + str((self.endTime-self.startTime)*1000) + " ms")
 
@@ -264,4 +278,5 @@ class PathFinder(customtkinter.CTk):
 
 if __name__ == "__main__":
     app = PathFinder()
+    app.protocol("WM_DELETE_WINDOW", app.quit)
     app.mainloop()
