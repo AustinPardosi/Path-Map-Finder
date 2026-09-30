@@ -1,106 +1,119 @@
-# Tucil3_13521063_13521084
-Repository Tugas Kecil 3 Mata Kuliah Strategi Algoritma
-
-## Table of Contents
-* [General Information](#general-information)
-* [Languange Used](#languange-used)
-* [Features](#features)
-* [Repository Structure](#repository-structure)
-* [Setup](#setup)
-* [How to Compile and Run](#how-to-compile-and-run)
-* [Project Status](#project-status)
-* [Acknowledgements](#acknowledgements)
-* [Contacts](#contacts)
-
-## General Information
 <div align="center">
-    <h2>Path Map Finder</h2>
-    <img src="img/GUI_1.png" alt="1" style="max-width:20em;"></img>
-    <img src="img/GUI_2.png" alt="2" style="max-width:20em;"></img>
-    <img src="img/CLI.png" alt="2" style="max-width:20em;"></img>
-    <br/>
-    <br/>
+
+# 🗺️ Path Map Finder
+
+**Find the shortest route between two places on a real map, powered by Uniform Cost Search and A\*.**
+
+[![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![CustomTkinter](https://img.shields.io/badge/GUI-CustomTkinter-1F6FEB)](https://github.com/TomSchimansky/CustomTkinter)
+[![NetworkX](https://img.shields.io/badge/Graphs-NetworkX-FF6F00)](https://networkx.org/)
+[![OpenStreetMap](https://img.shields.io/badge/Maps-OpenStreetMap-7EBC6F?logo=openstreetmap&logoColor=white)](https://www.openstreetmap.org/)
+![Status](https://img.shields.io/badge/status-completed-brightgreen)
+
+<img src="img/GUI_2.png" alt="Shortest route drawn on an OpenStreetMap view around ITB, Bandung" width="850">
+
 </div>
 
-Path Map Finder adalah sebuah program untuk menentukan lintasan rute terpendek dari suatu titik ke titik lain dengan menerapkan Algoritma UCS (Uniform cost search) dan A* (atau A star) untuk penyelesaiannya. Program ini menerima sebuah file txt yang berisi N buah jumlah, pasangan nama simpul dan koordinat, serta matriks ketetanggaan yang menyatakan keterhubungan simpul-simpul yang ada pada graph. Program ini juga dapat menampilkan lintasan rute terpendek dengan menggunakan tampilan OpenStreetMap.
+---
 
-Repository ini dibuat dan mengandung file yang dibutuhkan untuk menyelesaikan Tugas Kecil 3 IF2211 Strategi Algoritma.
+## ✨ Highlights
 
-Author: 
-- 13521063 Salomo Reinhart Gregory Manalu
-- 13521084 Austin Gabriel Pardosi
+- 🧭 **Two search algorithms:** Uniform Cost Search (UCS) and A\* with a straight-line (Euclidean) heuristic
+- 🌍 **Real-world maps:** every node is a real GPS coordinate, and the route is drawn on an interactive OpenStreetMap view
+- 📊 **Graph view:** the full road network rendered with NetworkX and Matplotlib, next to a per-segment distance table
+- ⏱️ **Metrics:** total distance and execution time for every search
+- 🖥️ **CLI export:** print the query and its result as clean tables in the terminal
+- 🌗 **Dark and light themes**, built with CustomTkinter
+- 🛡️ **Input validation:** malformed map files are rejected before any search runs
 
-## Languange Used
-- Python Languange (100%)
+## 📸 Screenshots
 
-## Features
-| No. | Nama Fitur | Status |
-|-----|------------|:------:|
-|1 |Program dapat menerima input graf|:heavy_check_mark:|
-|2 |Program dapat menghitung lintasan terpendek dengan UCS|:heavy_check_mark:|
-|3 |Program dapat menghitung lintasan terpendek dengan A*|:heavy_check_mark:|
-|4 |Program dapat menampilkan lintasan terpendek serta jaraknya|:heavy_check_mark:|
-|5 |Bonus: Program dapat menerima input peta dengan Google Map API dan menampilkan peta serta lintasan terpendek pada peta|:heavy_check_mark:|
+| Graph view | CLI output |
+|:---:|:---:|
+| <img src="img/GUI_1.png" alt="Graph view showing a UCS result" width="480"> | <img src="img/CLI.png" alt="Result printed as tables in the terminal" width="400"> |
 
-## Repository Structure
-```bash
-.
-│   README.md
-│  
-├───doc
-│      Tucil3_13521063_13521084.pdf
-│
-├───img
-│      add_folder.png
-│      execute.png
-│      GUI_1.png
-│      GUI_2.png
-│
-├───src  
-│      algorithm.py
-│      main.py
-│      parse_into_graph.py
-│
-└───test
-       AlunAlun_map.txt
-       BuahBatu_map.txt
-       ITB_map.txt
-       SekipMedan_Map.txt
+## ⚙️ How It Works
+
+```mermaid
+flowchart LR
+    A[📄 Map file] --> B[Parser]
+    B --> C[Weighted graph<br/>NetworkX]
+    C --> D{Algorithm}
+    D -->|UCS| E[Shortest path + distance]
+    D -->|A*| E
+    E --> F[📊 Graph view]
+    E --> G[🗺️ OpenStreetMap]
+    E --> H[🖥️ CLI tables]
 ```
-## Setup
-- Pastikan anda telah menginstall bahasa python.
-- Install package matplotlib, networkx, dan tkinter. Jalankan perintah berikut pada terminal
 
-    1. pip3 install matplotlib
-    2. pip3 install networkx
-    3. pip3 install tkinter
-    4. pip3 install pillow
-    5. pip3 install tkintermapview
-    6. pip3 install customtkinter
-    7. pip3 install tabulate
+Each edge is weighted by the straight-line distance between its two nodes' coordinates.
 
-## How to Compile and Run
-Setelah setup berhasil dilakukan, ikuti langkah dibawah untuk menjalankan program:
-1. Buka folder src.
-2. Masukkan command 'python main.py'
+| | UCS | A\* |
+|---|---|---|
+| Expands the node with the lowest | path cost so far, `g(n)` | `f(n) = g(n) + h(n)` |
+| Heuristic `h(n)` | none | Euclidean distance to the goal |
+| Result | ✅ optimal | ✅ optimal (the heuristic never overestimates), usually exploring fewer nodes |
 
-Cara menggunakan:
-- Masukkan file map dengan ekstensi .txt dengan menekan button Insert File <br>
-- Contoh file bisa dilihat di folder test<br>
-- Pilih simpul awal dan akhir yang ingin diketahui lintasan terpendeknya <br>
-- Pilih algoritma yang ingin dipakai: UCS / A* <br>
-- Tekan button execute
-- Jika ingin melihat tampilan OpenStreetMap, silahkan tekan button Map
-- Jika ingin mengubah tampilan mode: Dark/Light, silahkan tekan button Theme Mode <br>
-- Jika ingin melihat tampilan di CLI, silahkan tekan button Print To CLI <br>
+## 🚀 Getting Started
 
-## Project Status
-Proyek ini telah selesai secara utuh (Completed).
+**Prerequisites:** Python 3 with Tkinter (included in the python.org installers).
 
-## Acknowledgements
-- Terima kasih kepada Tuhan yang Maha Esa
-- Terima kasih kepada para dosen pengampu: Bu Ulfa, Pak Rinaldi, dan Pak Rila
-- Terima kasih kepada Tim Asisten Kuliah IF2211
+```bash
+git clone https://github.com/AustinPardosi/Path-Map-Finder.git
+cd Path-Map-Finder
+pip install matplotlib networkx pillow tkintermapview customtkinter tabulate
+python src/main.py
+```
 
-## Contacts
-Diciptakan dan diatur oleh 13521063 Salomo Reinhart Gregory Manalu dan 13521084 Austin Gabriel Pardosi
+> 🌐 The map view downloads OpenStreetMap tiles, so it needs an internet connection.
+
+## 🕹️ Usage
+
+1. Click **Insert File** and pick a map from [`test/`](test)
+2. Choose a **start** and a **goal** node
+3. Select **A\*** or **UCS**
+4. Hit **Execute** to see the path, total distance, and execution time
+5. Open the **Map** tab to see the route on OpenStreetMap
+6. Click **Print To CLI** to print the result in your terminal
+
+## 🧩 Map File Format
+
+```text
+8
+GerbangUtamaITB -6.893177802481791 107.61043913136548
+PertigaanBNI -6.893844716268942 107.60846860579544
+...
+0 1 0 0 0 0 1 0
+1 0 1 0 0 0 0 0
+...
+```
+
+- **Line 1:** number of nodes `N` (at least 8)
+- **Next `N` lines:** `name latitude longitude`, where names contain no spaces
+- **Last `N` lines:** an `N × N` adjacency matrix where `1` means connected and the diagonal is `0`
+
+Four sample maps are included: the ITB campus, Buah Batu, and Alun-Alun in Bandung, and Sekip in Medan.
+
+## 📁 Project Structure
+
+```text
+Path-Map-Finder/
+├── src/
+│   ├── main.py              # GUI, graph and map rendering, CLI export
+│   ├── algorithm.py         # UCS and A* implementations
+│   └── parse_into_graph.py  # map file parser and graph builder
+├── test/                    # sample maps
+├── img/                     # screenshots and button icons
+└── doc/                     # full project report (PDF)
+```
+
+## 👥 Team
+
+| Name | GitHub |
+|---|---|
+| Austin Gabriel Pardosi | [@AustinPardosi](https://github.com/AustinPardosi) |
+| Salomo Reinhart Gregory Manalu | [@Salomo309](https://github.com/Salomo309) |
+
+## 🎓 Acknowledgements
+
+Built in April 2023 for **IF2211 Algorithm Strategies** at Institut Teknologi Bandung. Thanks to God Almighty, to our lecturers Bu Ulfa, Pak Rinaldi, and Pak Rila, and to the IF2211 teaching assistants.
